@@ -112,31 +112,52 @@ function resolveConfigEnvVars(obj: unknown): unknown {
 export function loadConfig(configPath?: string): ContextiveConfig {
   const cwd = process.cwd();
 
-  // Determine config file path
-  let resolvedPath: string | undefined = configPath;
+  // Determine config file path and source (for error messages)
+  type Source = "arg" | "env" | "default" | "none";
+  let resolvedPath: string | undefined;
+  let source: Source = "none";
 
-  if (!resolvedPath && process.env.CONTEXTIVE_CONFIG) {
+  if (configPath) {
+    resolvedPath = configPath;
+    source = "arg";
+  } else if (process.env.CONTEXTIVE_CONFIG) {
     resolvedPath = process.env.CONTEXTIVE_CONFIG;
-  }
-
-  if (!resolvedPath) {
+    source = "env";
+  } else {
     const jsonPath = resolve(cwd, "contextive.config.json");
     if (existsSync(jsonPath)) {
       resolvedPath = jsonPath;
+      source = "default";
     }
   }
 
   // Load raw config
   let rawConfig: unknown = {};
 
-  if (resolvedPath && existsSync(resolvedPath)) {
-    if (!resolvedPath.endsWith(".json")) {
-      throw new Error(
-        `Only JSON configuration files are supported. Got: ${resolvedPath}`
-      );
+  if (resolvedPath) {
+    // Explicit paths (--config or CONTEXTIVE_CONFIG) must exist
+    if (!existsSync(resolvedPath)) {
+      if (source === "arg") {
+        throw new Error(
+          `Configuration file not found at --config path: ${resolvedPath}`
+        );
+      }
+      if (source === "env") {
+        throw new Error(
+          `Configuration file not found at CONTEXTIVE_CONFIG path: ${resolvedPath}`
+        );
+      }
+      // For implicit default probe, fall through to schema defaults
+    } else {
+      // File exists, validate format and parse
+      if (!resolvedPath.endsWith(".json")) {
+        throw new Error(
+          `Only JSON configuration files are supported. Got: ${resolvedPath}`
+        );
+      }
+      const content = readFileSync(resolvedPath, "utf-8");
+      rawConfig = JSON.parse(content);
     }
-    const content = readFileSync(resolvedPath, "utf-8");
-    rawConfig = JSON.parse(content);
   }
 
   // Resolve environment variables
