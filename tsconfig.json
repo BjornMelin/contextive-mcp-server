@@ -16,6 +16,6 @@
     "resolveJsonModule": true,
     "types": ["node", "vitest"]
   },
-  "include": ["src", "vitest.config.mts"],
+  "include": ["src"],
   "exclude": ["dist", "node_modules"]
 }
