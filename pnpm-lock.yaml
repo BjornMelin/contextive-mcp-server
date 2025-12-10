@@ -12,7 +12,7 @@ importers:
         specifier: ^1.24.0
         version: 1.24.3(zod@4.1.13)
       ai:
-        specifier: ^6.0.0-beta.0
+        specifier: '>=6.0.0-beta.143'
         version: 6.0.0-beta.143(zod@4.1.13)
       pino:
         specifier: ^9.0.0
