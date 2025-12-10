@@ -5,13 +5,14 @@
  * Implements MCP specification 2025-11-25.
  */
 
+import pkg from "../../package.json" with { type: "json" };
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { loadConfig, type ContextiveConfig } from "./config.js";
 import pino from "pino";
 
-const VERSION = "0.1.0";
+const VERSION = pkg.version || "0.1.0";
 
 export interface ContextiveServer {
   server: McpServer;

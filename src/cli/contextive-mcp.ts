@@ -7,8 +7,10 @@
  *   contextive-mcp --help
  */
 
+import pkg from "../../package.json" with { type: "json" };
 import { createServer } from "../core/server.js";
 
+const VERSION = pkg.version || "0.1.0";
 const args = process.argv.slice(2);
 
 function printHelp(): void {
@@ -39,7 +41,7 @@ Examples:
 }
 
 function printVersion(): void {
-  console.log("contextive-mcp-server v0.1.0");
+  console.log(`contextive-mcp-server v${VERSION}`);
 }
 
 async function main(): Promise<void> {
