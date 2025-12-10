@@ -19,6 +19,7 @@ export interface ContextiveServer {
   config: ContextiveConfig;
   logger: pino.Logger;
   start(): Promise<void>;
+  close(): Promise<void>;
 }
 
 /**
@@ -77,7 +78,13 @@ export function createServer(configPath?: string): ContextiveServer {
     }
   }
 
-  return { server, config, logger, start };
+  async function close(): Promise<void> {
+    logger.info("Closing Contextive MCP server");
+    // TODO: Add proper cleanup for transports and resources when needed
+    logger.info("Contextive MCP server closed successfully");
+  }
+
+  return { server, config, logger, start, close };
 }
 
 /**

@@ -35,6 +35,15 @@ const toolPackConfigSchema = z.object({
 });
 
 /**
+ * Default tool pack configurations (centralized to avoid duplication).
+ */
+const DEFAULT_TOOL_PACKS = {
+  fs: { enabled: false, mode: "read-only" },
+  http: { enabled: false, mode: "read-only" },
+  introspect: { enabled: true, mode: "read-only" },
+} as const;
+
+/**
  * Complete Contextive configuration schema.
  */
 export const configSchema = z.object({
@@ -42,16 +51,12 @@ export const configSchema = z.object({
   providers: z.record(z.string(), providerConfigSchema).optional().default({}),
   toolPacks: z
     .object({
-      fs: toolPackConfigSchema.optional().default({ enabled: false, mode: "read-only" }),
-      http: toolPackConfigSchema.optional().default({ enabled: false, mode: "read-only" }),
-      introspect: toolPackConfigSchema.optional().default({ enabled: true, mode: "read-only" }),
+      fs: toolPackConfigSchema.optional().default(DEFAULT_TOOL_PACKS.fs),
+      http: toolPackConfigSchema.optional().default(DEFAULT_TOOL_PACKS.http),
+      introspect: toolPackConfigSchema.optional().default(DEFAULT_TOOL_PACKS.introspect),
     })
     .optional()
-    .default({
-      fs: { enabled: false, mode: "read-only" },
-      http: { enabled: false, mode: "read-only" },
-      introspect: { enabled: true, mode: "read-only" },
-    }),
+    .default(DEFAULT_TOOL_PACKS),
   workflows: z.record(z.string(), z.unknown()).optional().default({}),
 });
 

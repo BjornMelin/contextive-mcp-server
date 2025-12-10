@@ -78,16 +78,43 @@ async function main(): Promise<void> {
       const contextive = createServer(configPath);
       await contextive.start();
 
-      // Keep process alive
-      process.on("SIGINT", () => {
-        contextive.logger.info("Received SIGINT, shutting down...");
-        process.exit(0);
-      });
+      // Track shutdown to prevent multiple concurrent shutdowns
+      let isShuttingDown = false;
+      const shutdownTimeoutMs = 10000; // 10 second timeout
 
-      process.on("SIGTERM", () => {
-        contextive.logger.info("Received SIGTERM, shutting down...");
-        process.exit(0);
-      });
+      async function gracefulShutdown(signal: string): Promise<void> {
+        // Guard against multiple signals
+        if (isShuttingDown) {
+          return;
+        }
+        isShuttingDown = true;
+
+        contextive.logger.info(`Received ${signal}, initiating graceful shutdown...`);
+
+        // Set up timeout to force exit if shutdown hangs
+        const forceExitTimer = setTimeout(() => {
+          contextive.logger.error(
+            `Graceful shutdown timeout (${shutdownTimeoutMs}ms) exceeded, forcing exit`
+          );
+          process.exit(1);
+        }, shutdownTimeoutMs);
+
+        try {
+          await contextive.close();
+          clearTimeout(forceExitTimer);
+          contextive.logger.info("Server shutdown completed successfully");
+          process.exit(0);
+        } catch (error) {
+          clearTimeout(forceExitTimer);
+          const errorMsg =
+            error instanceof Error ? error.message : String(error);
+          contextive.logger.error(`Error during graceful shutdown: ${errorMsg}`);
+          process.exit(1);
+        }
+      }
+
+      process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+      process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
     } catch (error) {
       console.error("Failed to start server:", error);
       process.exit(1);
