@@ -12,6 +12,7 @@
   "scripts": {
     "start": "NODE_ENV=production node ./dist/cli/contextive-mcp.js serve --stdio",
     "build": "tsc -p tsconfig.json",
+    "type-check": "tsc --noEmit",
     "dev": "tsx src/cli/contextive-mcp.ts serve --stdio",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "vitest run",
