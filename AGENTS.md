@@ -30,9 +30,15 @@ Cursor) that contribute to this repository via MCP or editor integrations.
    - Do not break existing tests; if you must adjust them, explain why.
 
 5. **Logging and safety**
-   - Use the shared logging utilities.
+   - Use the shared logging utilities (pino‑based) once available.
    - Treat side‑effectful tools (FS writes, HTTP POST, etc.) as sensitive.
    - Document side effects clearly.
+
+6. **Tooling and commands**
+   - Node.js **22+** only (per ADR 0001).
+   - Package manager: **pnpm**. Do not add npm/yarn lockfiles.
+   - Scripts: `pnpm lint`, `pnpm test`, `pnpm build`, `pnpm dev`, `pnpm check`.
+   - Module format: NodeNext/ESM; keep TypeScript strict options intact.
 
 ## 3. What agents should not do
 
@@ -59,6 +65,12 @@ When adding a new **workflow**:
 - [ ] Add a test for the workflow.
 - [ ] Document it briefly in the README or a dedicated doc.
 
+When changing **configuration**:
+
+- [ ] Update Zod config schema and regenerate `config/config.schema.json` if the shape changes.
+- [ ] Keep `config/default.config.json` in sync with required/optional fields.
+- [ ] Add/adjust config validation tests.
+
 ## 5. Interaction model
 
 Agents interacting with this repo should:
@@ -66,3 +78,5 @@ Agents interacting with this repo should:
 - Prefer reading ADRs/specs before writing code.
 - Use search to find existing patterns before inventing new ones.
 - Keep changes small and focused; avoid large, mixed‑concern edits.
+- Open a new ADR before altering architecture or core protocols.
+- Keep README/PRD/specs consistent with behavior changes (update docs alongside code).
