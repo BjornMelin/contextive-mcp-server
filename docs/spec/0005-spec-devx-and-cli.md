@@ -29,12 +29,12 @@ Commands:
 ## 3. Developer workflows
 
 - Repo uses:
-  - `pnpm` or `npm` scripts (your choice; the sample `package.json` assumes `npm`).
+  - `pnpm` scripts (preferred; baseline config assumes `pnpm`).
 - Common scripts:
-  - `npm test`: run tests.
-  - `npm run lint`: run ESLint.
-  - `npm run build`: build the server.
-  - `npm run dev`: run in watch mode (stdio).
+  - `pnpm test`: run tests.
+  - `pnpm run lint`: run ESLint.
+  - `pnpm run build`: build the server.
+  - `pnpm run dev`: run in watch mode (stdio).
 
 ## 4. Checklists
 
@@ -51,4 +51,3 @@ Commands:
 - [ ] `README.md` has clear quick‑start instructions.
 - [ ] `AGENTS.md` defines rules for agents interacting with the repo.
 - [ ] Automated tests run in CI and locally with a single command.
-

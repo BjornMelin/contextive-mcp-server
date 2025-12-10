@@ -179,9 +179,9 @@ It focuses on:
 ### Install
 
 ```bash
-npm install -g contextive-mcp-server
+pnpm add -g contextive-mcp-server
 # or
-npx contextive-mcp-server@latest --help
+pnpm dlx contextive-mcp-server@latest --help
 ````
 
 ### Run in stdio mode
@@ -279,10 +279,9 @@ See `docs/adr` and `docs/spec` for detailed design.
 * Use `AGENTS.md` for agent behavior when working on this repo via MCP.
 * Run:
 
-  * `npm test`
-  * `npm run lint`
-  * `npm run build`
+* `pnpm test`
+* `pnpm run lint`
+* `pnpm run build`
 
 Please keep changes aligned with the ADRs and specs; propose new ADRs for
 significant architecture changes.
-

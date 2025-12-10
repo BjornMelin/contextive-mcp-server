@@ -15,8 +15,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "check": "npm run lint && npm test",
-    "prepare": "npm run build"
+    "check": "pnpm run lint && pnpm run test",
+    "prepare": "pnpm run build"
   },
   "keywords": [
     "mcp",
