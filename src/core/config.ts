@@ -60,10 +60,16 @@ export type ContextiveConfig = z.infer<typeof configSchema>;
 /**
  * Resolves environment variable references in strings.
  * Supports $VAR and ${VAR} syntax.
+ * Throws an error if a referenced environment variable is not defined.
  */
 function resolveEnvVars(value: string): string {
   return value.replace(/\$\{?([A-Z_][A-Z0-9_]*)\}?/g, (_, name) => {
-    return process.env[name] ?? "";
+    if (process.env[name] === undefined) {
+      throw new Error(
+        `Environment variable "${name}" is not defined but is referenced in configuration.`
+      );
+    }
+    return process.env[name] as string;
   });
 }
 
@@ -91,10 +97,12 @@ function resolveConfigEnvVars(obj: unknown): unknown {
  * Load configuration from file or environment.
  *
  * Resolution order:
- * 1. CONTEXTIVE_CONFIG env var path
- * 2. contextive.config.json in CWD
- * 3. contextive.config.yaml in CWD
- * 4. Default configuration
+ * 1. Explicit `configPath` argument (if provided)
+ * 2. CONTEXTIVE_CONFIG env var path
+ * 3. contextive.config.json in CWD
+ * 4. Default configuration (if no config file found)
+ *
+ * Note: YAML config files are not yet supported.
  */
 export function loadConfig(configPath?: string): ContextiveConfig {
   const cwd = process.cwd();
@@ -107,17 +115,9 @@ export function loadConfig(configPath?: string): ContextiveConfig {
   }
 
   if (!resolvedPath) {
-    const candidates = [
-      "contextive.config.json",
-      "contextive.config.yaml",
-      "contextive.config.yml",
-    ];
-    for (const candidate of candidates) {
-      const fullPath = resolve(cwd, candidate);
-      if (existsSync(fullPath)) {
-        resolvedPath = fullPath;
-        break;
-      }
+    const jsonPath = resolve(cwd, "contextive.config.json");
+    if (existsSync(jsonPath)) {
+      resolvedPath = jsonPath;
     }
   }
 
@@ -125,15 +125,13 @@ export function loadConfig(configPath?: string): ContextiveConfig {
   let rawConfig: unknown = {};
 
   if (resolvedPath && existsSync(resolvedPath)) {
-    const content = readFileSync(resolvedPath, "utf-8");
-    if (resolvedPath.endsWith(".json")) {
-      rawConfig = JSON.parse(content);
-    } else {
-      // YAML support would go here - for now, only JSON
+    if (!resolvedPath.endsWith(".json")) {
       throw new Error(
-        `YAML config not yet supported. Use JSON or install yaml parser.`
+        `Only JSON configuration files are supported. Got: ${resolvedPath}`
       );
     }
+    const content = readFileSync(resolvedPath, "utf-8");
+    rawConfig = JSON.parse(content);
   }
 
   // Resolve environment variables

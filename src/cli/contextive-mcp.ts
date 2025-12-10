@@ -4,7 +4,6 @@
  *
  * Usage:
  *   contextive-mcp serve --stdio
- *   contextive-mcp serve --http --port 3000
  *   contextive-mcp --help
  */
 
@@ -26,8 +25,6 @@ Commands:
 
 Options:
   --stdio         Use stdio transport (default)
-  --http          Use HTTP transport
-  --port <port>   HTTP port (default: 3000)
   --config <path> Path to config file
   --help, -h      Show this help message
   --version, -v   Show version
@@ -60,7 +57,20 @@ async function main(): Promise<void> {
 
   if (command === "serve") {
     const configIdx = args.indexOf("--config");
-    const configPath = configIdx !== -1 ? args[configIdx + 1] : undefined;
+    let configPath: string | undefined = undefined;
+
+    if (configIdx !== -1) {
+      configPath = args[configIdx + 1];
+      if (
+        configPath === undefined ||
+        configPath.startsWith("--") ||
+        configPath.startsWith("-")
+      ) {
+        console.error("Error: --config flag requires a path argument.");
+        printHelp();
+        process.exit(1);
+      }
+    }
 
     try {
       const contextive = createServer(configPath);
