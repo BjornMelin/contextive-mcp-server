@@ -1,0 +1,23 @@
+{
+  "$schema": "./config.schema.json",
+  "server": {
+    "mode": "stdio",
+    "logLevel": "info"
+  },
+  "providers": {
+    "openai": {
+      "enabled": true,
+      "defaultModel": "gpt-4.1-mini"
+    }
+  },
+  "toolPacks": {
+    "fs": {
+      "enabled": true,
+      "mode": "read-only"
+    },
+    "http": {
+      "enabled": false
+    }
+  },
+  "workflows": {}
+}

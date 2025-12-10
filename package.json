@@ -1,0 +1,49 @@
+{
+  "name": "contextive-mcp-server",
+  "version": "0.1.0",
+  "description": "Contextive MCP Server – a lean, multi-provider, workflow-oriented Model Context Protocol server.",
+  "bin": {
+    "contextive-mcp": "./dist/cli/contextive-mcp.js"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/contextive-mcp.ts serve --stdio",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "check": "npm run lint && npm test",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "contextive",
+    "mcp-server",
+    "ai",
+    "agents"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.0.0", 
+    "@ai-sdk/core": "^6.0.0-beta",
+    "zod": "^4.0.0",
+    "pino": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.0.0",
+    "tsx": "^4.19.0"
+  }
+}
