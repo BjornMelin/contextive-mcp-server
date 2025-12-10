@@ -21,18 +21,31 @@ export interface ContextiveServer {
 }
 
 /**
+ * Builds pino logger options.
+ * Uses pino-pretty in development for readable output.
+ * In production, uses plain pino JSON output (pino-pretty is a devDependency).
+ */
+function buildLoggerOptions(logLevel: string): pino.LoggerOptions {
+  const options: pino.LoggerOptions = { level: logLevel };
+
+  // Only use pino-pretty in development - it's a devDependency
+  if (process.env.NODE_ENV !== "production") {
+    options.transport = {
+      target: "pino-pretty",
+      options: { colorize: true },
+    };
+  }
+
+  return options;
+}
+
+/**
  * Creates and configures the Contextive MCP server.
  */
 export function createServer(configPath?: string): ContextiveServer {
   const config = loadConfig(configPath);
 
-  const logger = pino({
-    level: config.server.logLevel,
-    transport:
-      process.env.NODE_ENV !== "production"
-        ? { target: "pino-pretty", options: { colorize: true } }
-        : undefined,
-  });
+  const logger = pino(buildLoggerOptions(config.server.logLevel));
 
   const server = new McpServer({
     name: "contextive-mcp-server",
